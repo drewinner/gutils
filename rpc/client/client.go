@@ -15,7 +15,7 @@ import (
 *	@param:taskHandler 任务标识
 *	@param:params 参数
  */
-func Invoke(id, logId int32, taskHandler, params string) {
+func Invoke(id, logId int32, taskHandler, params string) (resp *pb.TaskResp, err error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
 	conn, err := grpc.DialContext(ctx, "127.0.0.1:8090", grpc.WithInsecure())
@@ -36,5 +36,5 @@ func Invoke(id, logId int32, taskHandler, params string) {
 		fmt.Println(err.Error())
 
 	}
-	fmt.Printf("response:%+v", r)
+	return r, err
 }
