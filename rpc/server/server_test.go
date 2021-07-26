@@ -5,6 +5,7 @@ import (
 )
 
 func TestServer_Run(t *testing.T) {
-	Start("127.0.0.1:8090")
+	address := "127.0.0.1:8090"
+	Start(address)
 	select {}
 }
