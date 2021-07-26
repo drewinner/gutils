@@ -3,7 +3,7 @@ syntax = "proto3";
 option go_package = "./rpc";
 
 service TaskService {
-  rpc Run(TaskReq) returns (TaskResp);
+  rpc Call(TaskReq) returns (TaskResp);
 }
 
 

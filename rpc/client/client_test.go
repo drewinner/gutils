@@ -1,7 +1,15 @@
 package client
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 func TestInvoke(t *testing.T) {
-	Invoke(1, 2, "test", "{}")
+	resp, err := Invoke(1, 2, "test", "test...")
+	if err != nil {
+		fmt.Println("invoke err", err.Error())
+		return
+	}
+	fmt.Printf("resp:%+v", resp)
 }

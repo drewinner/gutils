@@ -18,7 +18,7 @@ const _ = grpc.SupportPackageIsVersion7
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type TaskServiceClient interface {
-	Run(ctx context.Context, in *TaskReq, opts ...grpc.CallOption) (*TaskResp, error)
+	Call(ctx context.Context, in *TaskReq, opts ...grpc.CallOption) (*TaskResp, error)
 }
 
 type taskServiceClient struct {
@@ -29,9 +29,9 @@ func NewTaskServiceClient(cc grpc.ClientConnInterface) TaskServiceClient {
 	return &taskServiceClient{cc}
 }
 
-func (c *taskServiceClient) Run(ctx context.Context, in *TaskReq, opts ...grpc.CallOption) (*TaskResp, error) {
+func (c *taskServiceClient) Call(ctx context.Context, in *TaskReq, opts ...grpc.CallOption) (*TaskResp, error) {
 	out := new(TaskResp)
-	err := c.cc.Invoke(ctx, "/TaskService/Run", in, out, opts...)
+	err := c.cc.Invoke(ctx, "/TaskService/Call", in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -42,7 +42,7 @@ func (c *taskServiceClient) Run(ctx context.Context, in *TaskReq, opts ...grpc.C
 // All implementations must embed UnimplementedTaskServiceServer
 // for forward compatibility
 type TaskServiceServer interface {
-	Run(context.Context, *TaskReq) (*TaskResp, error)
+	Call(context.Context, *TaskReq) (*TaskResp, error)
 	mustEmbedUnimplementedTaskServiceServer()
 }
 
@@ -50,8 +50,8 @@ type TaskServiceServer interface {
 type UnimplementedTaskServiceServer struct {
 }
 
-func (UnimplementedTaskServiceServer) Run(context.Context, *TaskReq) (*TaskResp, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Run not implemented")
+func (UnimplementedTaskServiceServer) Call(context.Context, *TaskReq) (*TaskResp, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Call not implemented")
 }
 func (UnimplementedTaskServiceServer) mustEmbedUnimplementedTaskServiceServer() {}
 
@@ -66,20 +66,20 @@ func RegisterTaskServiceServer(s grpc.ServiceRegistrar, srv TaskServiceServer) {
 	s.RegisterService(&TaskService_ServiceDesc, srv)
 }
 
-func _TaskService_Run_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+func _TaskService_Call_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(TaskReq)
 	if err := dec(in); err != nil {
 		return nil, err
 	}
 	if interceptor == nil {
-		return srv.(TaskServiceServer).Run(ctx, in)
+		return srv.(TaskServiceServer).Call(ctx, in)
 	}
 	info := &grpc.UnaryServerInfo{
 		Server:     srv,
-		FullMethod: "/TaskService/Run",
+		FullMethod: "/TaskService/Call",
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(TaskServiceServer).Run(ctx, req.(*TaskReq))
+		return srv.(TaskServiceServer).Call(ctx, req.(*TaskReq))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -92,8 +92,8 @@ var TaskService_ServiceDesc = grpc.ServiceDesc{
 	HandlerType: (*TaskServiceServer)(nil),
 	Methods: []grpc.MethodDesc{
 		{
-			MethodName: "Run",
-			Handler:    _TaskService_Run_Handler,
+			MethodName: "Call",
+			Handler:    _TaskService_Call_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

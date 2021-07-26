@@ -7,7 +7,7 @@ type Server struct {
 	pb.UnimplementedTaskServiceServer
 }
 
-func (s *Server) Run(ctx context.Context, req *pb.TaskReq) (*pb.TaskResp, error) {
+func (s *Server) Call(ctx context.Context, req *pb.TaskReq) (*pb.TaskResp, error) {
 	resp := &pb.TaskResp{
 		Id:            1,
 		LogId:         2,
