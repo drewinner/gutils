@@ -1,10 +1,10 @@
 package server
 
 import (
+	"fmt"
 	pb "github.com/drewinner/gutils/rpc/proto/rpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
-	"log"
 	"net"
 	"time"
 )
@@ -27,14 +27,18 @@ var kasp = keepalive.ServerParameters{
 *	启动rpc服务
 *	@param:address 地址：127.0.0.1:8090
  */
-func Start(address string) {
-	lis, err := net.Listen("tcp", address)
+func Start(addr string) {
+	err := startServer(addr)
 	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
+		fmt.Printf("start rpc server err:%s,address:%s",err.Error(),addr)
 	}
-	s := grpc.NewServer(grpc.KeepaliveEnforcementPolicy(kaep), grpc.KeepaliveParams(kasp))
+}
+func startServer(addr string) error{
+	lis, err := net.Listen("tcp", addr)
+	if err != nil {
+		return err
+	}
+	s := grpc.NewServer()
 	pb.RegisterTaskServiceServer(s, &Server{})
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
+	return s.Serve(lis)
 }

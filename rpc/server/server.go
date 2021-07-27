@@ -1,6 +1,9 @@
 package server
 
-import "context"
+import (
+	"context"
+	"time"
+)
 import pb "github.com/drewinner/gutils/rpc/proto/rpc"
 
 type Server struct {
@@ -8,13 +11,18 @@ type Server struct {
 }
 
 func (s *Server) Call(ctx context.Context, req *pb.TaskReq) (*pb.TaskResp, error) {
-	resp := &pb.TaskResp{
-		Id:            1,
-		LogId:         2,
-		Status:        1,
-		ExecStartTime: "",
-		ExecEndTime:   "",
-		LogMsg:        "yes....",
+	handler,err := Get(req.JobHandler)
+	if err != nil {
+		return nil,err
 	}
-	return resp, nil
+	start := time.Now().String()
+	r := handler.HandlerFunc(ctx,req.Params)
+	return &pb.TaskResp{
+		Id:            req.Id,
+		LogId:         req.LogId,
+		Status:        r.status,
+		ExecStartTime: start,
+		ExecEndTime:   time.Now().String(),
+		LogMsg:        r.msg,
+	},nil
 }
