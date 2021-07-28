@@ -2,7 +2,6 @@ package client
 
 import (
 	"context"
-	"fmt"
 	pb "github.com/drewinner/gutils/rpc/proto/rpc"
 	"time"
 )
@@ -14,19 +13,23 @@ import (
 *	@param:logId 日志id
 *	@param:taskHandler 任务标识
 *	@param:params 参数
+*	@param:timeout 超时时间、如果设置为0、设置为1秒过期
  */
-func Invoke(address string,id, logId int32, taskHandler, params string) (resp *pb.TaskResp, err error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+func Invoke(address string, id, logId int32, taskHandler, params string, timeout int) (resp *pb.TaskResp, err error) {
+	if timeout == 0 {
+		timeout = 1
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Duration(timeout)*time.Second)
 	defer cancel()
-	client, err := GetClient(address)
+	client, err := Pool.GetClient(address)
+	if err != nil {
+		return nil, err
+	}
 	r, err := client.Call(ctx, &pb.TaskReq{
 		Id:         id,
 		LogId:      logId,
 		JobHandler: taskHandler,
 		Params:     params,
 	})
-	if err != nil {
-		fmt.Println(err.Error())
-	}
 	return r, err
 }
